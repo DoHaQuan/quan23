@@ -90,5 +90,49 @@ class CalculatorTest {
 
 
     //TODO hier weitere Tests erstellen
-}
+
+    @Test
+    @DisplayName("should display result after adding two positive multi-digit numbers")
+    void testNegativeSubtraktion() {
+        Calculator calc = new Calculator();
+
+        calc.pressDigitKey(7);
+        calc.pressBinaryOperationKey("-");
+        calc.pressDigitKey(5);
+        calc.pressEqualsKey();
+
+
+        String expected = "2";
+        String actual = calc.readScreen();
+
+        assertEquals(expected, actual);
+    }
+    @Test
+    @DisplayName("should display error when pressing 1/x without entering a number")
+    void testReciprocalWithoutNumber() {
+        Calculator calc = new Calculator();
+
+        calc.pressUnaryOperationKey("1/x");  // Benutzer drückt 1/x ohne vorher eine Zahl einzugeben
+
+        String expected = "Error";  // Erwartetes Ergebnis: "Error", da keine Zahl für 1/x vorhanden ist
+        String actual = calc.readScreen();  // Tatsächliches Ergebnis vom Taschenrechner-Bildschirm
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("should display error when pressing multiple operation keys without entering numbers")
+    void  testPressingBinaryOperationWithoutNumber(){
+        Calculator calc = new Calculator();
+
+        calc.pressBinaryOperationKey("/");  // Benutzer drückt /
+
+        String expected = "Error";  // Erwartetes Ergebnis: "Error", weil keine Zahl eingegeben wurde
+        String actual = calc.readScreen();  // Tatsächliches Ergebnis vom Taschenrechner-Bildschirm
+
+        assertEquals(expected, actual);
+    }
+    }
+
+
 
