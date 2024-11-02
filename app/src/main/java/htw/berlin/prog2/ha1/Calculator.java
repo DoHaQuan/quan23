@@ -60,39 +60,64 @@ public class Calculator {
      * @param operation "+" für Addition, "-" für Substraktion, "x" für Multiplikation, "/" für Division
      */
     public void pressBinaryOperationKey(String operation)  {
-        latestValue = Double.parseDouble(screen);
-        latestOperation = operation;
-    }
 
-    /**
-     * Empfängt den Wert einer gedrückten unären Operationstaste, also eine der drei Operationen
-     * Quadratwurzel, Prozent, Inversion, welche nur einen Operanden benötigen.
-     * Beim Drücken der Taste wird direkt die Operation auf den aktuellen Zahlenwert angewendet und
-     * der Bildschirminhalt mit dem Ergebnis aktualisiert.
-     * @param operation "√" für Quadratwurzel, "%" für Prozent, "1/x" für Inversion
-     */
+            // Überprüfung, ob der Bildschirm leer ist oder "0" anzeigt
+            if (screen.equals("0") || screen.isEmpty()) {
+                screen = "Error";  // Fehleranzeige auf dem Bildschirm, wenn keine Zahl vorhanden ist
+                return;
+            }
+
+            // Operation und ersten Operanden speichern
+            latestOperation = operation;
+            latestValue = Double.parseDouble(screen);  // Speichern des ersten Operanden
+
+            // Bildschirm leeren für die Eingabe des zweiten Operanden
+            screen = "";
+        }
+
+
+        /**
+         * Empfängt den Wert einer gedrückten unären Operationstaste, also eine der drei Operationen
+         * Quadratwurzel, Prozent, Inversion, welche nur einen Operanden benötigen.
+         * Beim Drücken der Taste wird direkt die Operation auf den aktuellen Zahlenwert angewendet und
+         * der Bildschirminhalt mit dem Ergebnis aktualisiert.
+         * @param operation "√" für Quadratwurzel, "%" für Prozent, "1/x" für Inversion
+         */
     public void pressUnaryOperationKey(String operation) {
-        latestValue = Double.parseDouble(screen);
-        latestOperation = operation;
-        var result = switch(operation) {
-            case "√" -> Math.sqrt(Double.parseDouble(screen));
-            case "%" -> Double.parseDouble(screen) / 100;
-            case "1/x" -> 1 / Double.parseDouble(screen);
-            default -> throw new IllegalArgumentException();
-        };
-        screen = Double.toString(result);
-        if(screen.equals("NaN")) screen = "Error";
-        if(screen.contains(".") && screen.length() > 11) screen = screen.substring(0, 10);
+            double currentValue;
 
-    }
+            try {
+                // Den aktuellen Wert auf dem Bildschirm als Double analysieren
+                currentValue = Double.parseDouble(screen);
+            } catch (NumberFormatException e) {
+                // Bildschirm auf "Error" setzen, falls die Analyse fehlschlägt
+                screen = "Error";
+                return;
+            }
 
-    /**
-     * Empfängt den Befehl der gedrückten Dezimaltrennzeichentaste, im Englischen üblicherweise "."
-     * Fügt beim ersten Mal Drücken dem aktuellen Bildschirminhalt das Trennzeichen auf der rechten
-     * Seite hinzu und aktualisiert den Bildschirm. Daraufhin eingegebene Zahlen werden rechts vom
-     * Trennzeichen angegeben und daher als Dezimalziffern interpretiert.
-     * Beim zweimaligem Drücken, oder wenn bereits ein Trennzeichen angezeigt wird, passiert nichts.
-     */
+            double result = switch (operation) {
+                case "√" -> Math.sqrt(currentValue);
+                case "%" -> currentValue / 100;
+                case "1/x" -> currentValue == 0 ? Double.NaN : 1 / currentValue;
+                // Kehrwert berechnen, Division durch 0 behandeln
+                default -> throw new IllegalArgumentException("Unknown operation: " + operation);
+            };
+
+            // Ergebnis auf dem Bildschirm anzeigen
+            screen = Double.isNaN(result) ? "Error" : Double.toString(result);
+
+            // Formatierung für lange Zahlen
+            if (screen.contains(".") && screen.length() > 11) {
+                screen = screen.substring(0, 10);
+            }
+        }
+        /**
+         * Empfängt den Befehl der gedrückten Dezimaltrennzeichentaste, im Englischen üblicherweise "."
+         * Fügt beim ersten Mal Drücken dem aktuellen Bildschirminhalt das Trennzeichen auf der rechten
+         * Seite hinzu und aktualisiert den Bildschirm. Daraufhin eingegebene Zahlen werden rechts vom
+         * Trennzeichen angegeben und daher als Dezimalziffern interpretiert.
+         * Beim zweimaligem Drücken, oder wenn bereits ein Trennzeichen angezeigt wird, passiert nichts.
+         */
     public void pressDotKey() {
         if(!screen.contains(".")) screen = screen + ".";
     }
